@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcServer";
+
+service Lager {
+	rpc GetArtikelInfo (ArtikelSuchenMitIdModell) returns (ArtikelModell);
+	//rpc GetNewCustomers (NewCustomerRequest) returns (stream CustomerModel);
+}
+
+message NewCustomerRequest{
+
+}
+
+message ArtikelSuchenMitIdModell {
+	string Id = 1;
+}
+
+message ArtikelModell {
+	string id = 1;
+	string name = 2;
+	int32 anzahl = 3;
+	int32 minBestand = 4;
+	bool istAusverkauft = 5;
+}
