@@ -15,7 +15,8 @@ namespace GrpcServer.Services
         {
             _logger = logger;
         }
-        public override Task<ArtikelModell> GetArtikelInfo(ArtikelSuchenMitIdModell request, ServerCallContext context)
+        public override Task<ArtikelModell> GetArtikelInfo(
+            ArtikelSuchenMitIdModell request, ServerCallContext context)
         {
             ArtikelModell output = new ArtikelModell();
             if (request.Id == "1")
@@ -33,7 +34,7 @@ namespace GrpcServer.Services
                 output.MinBestand = 3;
 
             }
-            else
+            else if(request.Id == "3")
             {
                 output.Id = "3";
                 output.Name = "Schrank";
@@ -43,6 +44,33 @@ namespace GrpcServer.Services
 
             return Task.FromResult(output);
         }
+
+
+        public override async Task GetAlleArtikel(AlleArtikelAnfrage request, IServerStreamWriter<ArtikelModell> responseStream, ServerCallContext context)
+        {
+            foreach (var current in GetArtikels())
+            {
+                await responseStream.WriteAsync(current);
+            }
+        }
+
+        public IEnumerable<ArtikelModell> GetArtikels()
+        {
+            List<ArtikelModell> dummyListe = new List<ArtikelModell>();
+            dummyListe.Add(new ArtikelModell { Anzahl = 10, Id = "1", IstAusverkauft=false, MinBestand=5, Name="Stuhl", Kollektion="a"});
+            dummyListe.Add(new ArtikelModell { Anzahl = 25, Id = "2", IstAusverkauft=false, MinBestand=3, Name="Tisch", Kollektion="a"});
+            dummyListe.Add(new ArtikelModell { Anzahl = 42, Id = "3", IstAusverkauft=false, MinBestand=12, Name="Schrank", Kollektion="a"});
+            dummyListe.Add(new ArtikelModell { Anzahl = 0, Id = "4", IstAusverkauft=true, MinBestand=7, Name="Lampe", Kollektion="b"});
+            dummyListe.Add(new ArtikelModell { Anzahl = 0, Id = "5", IstAusverkauft=true, MinBestand=12, Name="Schreibtisch", Kollektion="b"});
+            dummyListe.Add(new ArtikelModell { Anzahl = 0, Id = "6", IstAusverkauft=true, MinBestand=20, Name="Nachttisch", Kollektion="b"});
+
+            foreach (var artikel in dummyListe)
+            {
+                yield return artikel;
+            }
+
+        }
+
 
         /*public override async Task GetNewCustomers(NewCustomerRequest request, IServerStreamWriter<CustomerModel> responseStream, ServerCallContext context)
         {

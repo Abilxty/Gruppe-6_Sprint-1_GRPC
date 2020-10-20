@@ -19,27 +19,30 @@ namespace GrpcClient
             Console.WriteLine(reply.Message);
             */
 
+
+            // langlebige HTTP2 Verbindung aufbauen
             var channel = GrpcChannel.ForAddress("https://localhost:5001");
+
+            // Client wird angelegt und diesem wird der Channel übergeben
             var lagerClient = new Lager.LagerClient(channel);
             
-            var artikelRequested = new ArtikelSuchenMitIdModell { Id = "1" };
+            // Die ID-Übergabe wird simuliert
+            var artikelRequested = new ArtikelSuchenMitIdModell { Id = "2" };
 
+            // Die übergebene ID wird der Methode GetArtikelInfoAsync übergeben, welche die Artikelinfos zurückgibt.
             var artikel = await lagerClient.GetArtikelInfoAsync(artikelRequested);
 
+            // Formatierte Ausgabe der Artikelinfos
             Console.WriteLine($" ID : {artikel.Id} \n Name : {artikel.Name} \n Anzahl : {artikel.Anzahl} \n Ausverkauft : {artikel.IstAusverkauft}");
 
-
-           /* Console.WriteLine($"{artikel.id} {artikel.LastName}");
-            Console.WriteLine("Net Customer List");
-
-            using (var call = customerClient.GetNewCustomers(new NewCustomerRequest()))
+            // Es wird eine Anfrage nach allen Artikeln übermittelt 
+            using var alleArtikel = lagerClient.GetAlleArtikel(new AlleArtikelAnfrage());
+            
+            // Der ResponseStream wird mit Hilfe einer Schleife durchgegangen und der jeweilige Artikel wird auf der Konsole freigegeben
+            await foreach (var art in alleArtikel.ResponseStream.ReadAllAsync())
             {
-                while( await call.ResponseStream.MoveNext())
-                {
-                    var currentCustomer = call.ResponseStream.Current;
-                    Console.WriteLine($"{currentCustomer.FirstName} {currentCustomer.LastName} : {currentCustomer.EmailAddress}");
-                }
-            }*/
+                Console.WriteLine($" ID : {art.Id} \n Name : {art.Name} \n Anzahl : {art.Anzahl} \n Ausverkauft : {art.IstAusverkauft}");
+            }
 
                 Console.ReadLine();
         }
