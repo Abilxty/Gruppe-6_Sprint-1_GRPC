@@ -41,11 +41,16 @@ namespace GrpcServer.Services
                 output.Anzahl = 42;
                 output.MinBestand = 12;
             }
+           // else
+            //{
+             //   throw StatusCode.NotFound;
+           // }
 
             return Task.FromResult(output);
         }
 
-
+        // Überschreiben der GetAlleArtikel Methode
+        // Das IEnumerable-Objekt wird iteriert und der jeweilige Artikel wird asynchron gestreamed
         public override async Task GetAlleArtikel(AlleArtikelAnfrage request, IServerStreamWriter<ArtikelModell> responseStream, ServerCallContext context)
         {
             foreach (var current in GetArtikels())
@@ -53,8 +58,26 @@ namespace GrpcServer.Services
                 await responseStream.WriteAsync(current);
             }
         }
+        // Überschreiben der GetAlleArtikelKollektion Methode - Gibt alle Artikel einer bestimmmten Kollektion zurück
+        // 
+        public override async Task GetAlleArtikelKollektion(IAsyncStreamReader<Kollektion> requestStream, IServerStreamWriter<ArtikelModell> responseStream, ServerCallContext context)
+        {
+            int counter = 0;
+            while (await requestStream.MoveNext())
+            {
+                var curKol = requestStream.Current;
+                List<Kollektion> allKol = new List<Kollektion>();
+                allKol.Add(curKol);
 
-        public IEnumerable<ArtikelModell> GetArtikels()
+
+                foreach (var current in GetArtikels(allKol[counter].Kol))
+                {
+                    await responseStream.WriteAsync(current);
+                }
+            }
+        }
+
+        public IEnumerable<ArtikelModell> GetArtikels(string kol=null)
         {
             List<ArtikelModell> dummyListe = new List<ArtikelModell>();
             dummyListe.Add(new ArtikelModell { Anzahl = 10, Id = "1", IstAusverkauft=false, MinBestand=5, Name="Stuhl", Kollektion="a"});
@@ -64,6 +87,17 @@ namespace GrpcServer.Services
             dummyListe.Add(new ArtikelModell { Anzahl = 0, Id = "5", IstAusverkauft=true, MinBestand=12, Name="Schreibtisch", Kollektion="b"});
             dummyListe.Add(new ArtikelModell { Anzahl = 0, Id = "6", IstAusverkauft=true, MinBestand=20, Name="Nachttisch", Kollektion="b"});
 
+            if (kol != null)
+            {
+                foreach (var artikel in dummyListe)
+                {
+                    if(artikel.Kollektion == kol)
+                    {
+                        yield return artikel;
+                    }
+                }
+            }
+
             foreach (var artikel in dummyListe)
             {
                 yield return artikel;
@@ -71,7 +105,7 @@ namespace GrpcServer.Services
 
         }
 
-
+        
         /*public override async Task GetNewCustomers(NewCustomerRequest request, IServerStreamWriter<CustomerModel> responseStream, ServerCallContext context)
         {
             List<CustomerModel> customers = new List<CustomerModel>
@@ -101,4 +135,5 @@ namespace GrpcServer.Services
             }
         }*/
     }
+    
 }

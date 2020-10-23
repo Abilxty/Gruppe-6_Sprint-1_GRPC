@@ -2,6 +2,7 @@
 using Grpc.Net.Client;
 using GrpcServer;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace GrpcClient
@@ -44,7 +45,38 @@ namespace GrpcClient
                 Console.WriteLine($" ID : {art.Id} \n Name : {art.Name} \n Anzahl : {art.Anzahl} \n Ausverkauft : {art.IstAusverkauft}");
             }
 
-                Console.ReadLine();
+            Kollektion kollektionA = new Kollektion { Kol = "a" };
+            //var AlleArtikelKollektion = lagerClient.GetAlleArtikelKollektion(kollektionA.Kol);
+            //denk daran es zu löschen, wenn die andere Implementierung klappt!!!
+
+
+            List<Kollektion> requests = new List<Kollektion>();
+            requests.Add(new Kollektion { Kol = "b" });
+            requests.Add(new Kollektion { Kol = "a" });
+
+
+            using (var call = lagerClient.GetAlleArtikelKollektion())
+            {
+                var responseReaderTask = Task.Run(async () =>
+                {
+                    while (await call.ResponseStream.MoveNext())
+                    {
+                        var artikelKollektion = call.ResponseStream.Current;
+                        Console.WriteLine($" ID : {artikelKollektion.Id} Name : {artikelKollektion.Name} Anzahl : {artikelKollektion.Anzahl} Ausverkauft : {artikelKollektion.IstAusverkauft} Kollektion : {artikelKollektion.Kollektion}");
+                    }
+                });
+
+                foreach( Kollektion req in requests)
+                {
+                    await call.RequestStream.WriteAsync(req);
+                }
+                await call.RequestStream.CompleteAsync();
+                await responseReaderTask;
+            }
+
+
+
+            Console.ReadLine();
         }
     }
 }
