@@ -18,13 +18,21 @@ namespace GrpcClient
             var lagerClient = new Lager.LagerClient(channel);
             
             // Die ID-Übergabe wird simuliert
-            var artikelRequested = new ArtikelSuchenMitIdModell { Id = "2" };
+            var artikelRequested = new ArtikelSuchenMitIdModell { Id = "4" };
 
             // Die übergebene ID wird der Methode GetArtikelInfoAsync übergeben, welche die Artikelinfos zurückgibt.
             var artikel = await lagerClient.GetArtikelInfoAsync(artikelRequested);
 
             // Formatierte Ausgabe der Artikelinfos
-            Console.WriteLine($" ID : {artikel.Id} \n Name : {artikel.Name} \n Anzahl : {artikel.Anzahl} \n Ausverkauft : {artikel.IstAusverkauft}");
+           if(artikel.StatusCode != null)
+            {
+                Console.WriteLine($"Es ist ein Fehler aufgetreten StatusCode:{artikel.StatusCode}");
+            }
+            else
+            {
+                Console.WriteLine($" ID : {artikel.Id} \n Name : {artikel.Name} \n Anzahl : {artikel.Anzahl} \n Ausverkauft : {artikel.IstAusverkauft}");
+            }
+            
 
             // Es wird eine Anfrage nach allen Artikeln übermittelt 
             using var alleArtikel = lagerClient.GetAlleArtikel(new AlleArtikelAnfrage());

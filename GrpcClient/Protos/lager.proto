@@ -35,5 +35,5 @@ message ArtikelModell {
 	int32 minBestand = 4;
 	bool istAusverkauft = 5;
 	string kollektion = 6;
+	string statusCode = 7;
 }
-

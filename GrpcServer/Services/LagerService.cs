@@ -25,30 +25,43 @@ namespace GrpcServer.Services
             ArtikelSuchenMitIdModell request, ServerCallContext context)
         {
             ArtikelModell output = new ArtikelModell();
-            if (request.Id == "1")
-            {
-                output.Id = "1";
-                output.Name= "Stuhl";
-                output.Anzahl = 10;
-                output.MinBestand = 5;
-            }
-            else if (request.Id == "2")
-            {
-                output.Id = "2";
-                output.Name = "Tisch";
-                output.Anzahl = 25;
-                output.MinBestand = 3;
+            Error error = new Error();
 
-            }
-            else if(request.Id == "3")
+            try
             {
-                output.Id = "3";
-                output.Name = "Schrank";
-                output.Anzahl = 42;
-                output.MinBestand = 12;
+                if (request.Id == "1")
+                {
+                    output.Id = "1";
+                    output.Name = "Stuhl";
+                    output.Anzahl = 10;
+                    output.MinBestand = 5;
+                }
+                else if (request.Id == "2")
+                {
+                    output.Id = "2";
+                    output.Name = "Tisch";
+                    output.Anzahl = 25;
+                    output.MinBestand = 3;
+
+                }
+                else if (request.Id == "3")
+                {
+                    output.Id = "3";
+                    output.Name = "Schrank";
+                    output.Anzahl = 42;
+                    output.MinBestand = 12;
+                }
+                else
+                {
+                    throw new RpcException(new Status(StatusCode.InvalidArgument, "Ouch!"));
+                }
             }
-          
-            
+            catch(RpcException e)
+            {
+                Console.WriteLine($"Ein Fehler ist aufgetreten: {e.Message} \nStatusCode: {e.StatusCode}");
+                output.StatusCode = "404";
+            }
+
             return Task.FromResult(output);
         }
 
