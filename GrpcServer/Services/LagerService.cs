@@ -97,43 +97,17 @@ namespace GrpcServer.Services
                     }
                 }
             }
-
-            foreach (var artikel in dummyListe)
+            else
             {
-                yield return artikel;
+                foreach (var artikel in dummyListe)
+                {
+                    yield return artikel;
+                }
             }
+            
 
         }
 
-        
-        /*public override async Task GetNewCustomers(NewCustomerRequest request, IServerStreamWriter<CustomerModel> responseStream, ServerCallContext context)
-        {
-            List<CustomerModel> customers = new List<CustomerModel>
-            {
-                new CustomerModel
-                {
-                    FirstName = "Furkan",
-                    LastName = "Asani",
-                    EmailAddress = "asfu1011@hs-karlsruhe.de",
-                    Age = 21,
-                    IsAlive = true
-                },
-                new CustomerModel
-                {
-                    FirstName = "Erkan",
-                    LastName = "Asani",
-                    EmailAddress = "aser1011@hs-karlsruhe.de",
-                    Age = 19,
-                    IsAlive = true
-                },
-
-            };
-            foreach (var cust in customers)
-            {
-                await Task.Delay(1000);
-                responseStream.WriteAsync(cust);
-            }
-        }*/
     }
     
 }

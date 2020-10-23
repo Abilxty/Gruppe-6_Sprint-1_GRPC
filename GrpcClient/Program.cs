@@ -66,9 +66,11 @@ namespace GrpcClient
                     }
                 });
 
-                foreach( Kollektion req in requests)
+                for( int i=0; i<2; ++i)
                 {
-                    await call.RequestStream.WriteAsync(req);
+                    Console.WriteLine("Bitte geben sie ihre gewünschte Kollektion ein!");
+                    String kolString = Console.ReadLine();
+                    await call.RequestStream.WriteAsync(new Kollektion { Kol = kolString});
                 }
                 await call.RequestStream.CompleteAsync();
                 await responseReaderTask;
