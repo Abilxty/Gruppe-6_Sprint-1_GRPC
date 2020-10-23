@@ -15,6 +15,12 @@ namespace GrpcServer.Services
         {
             _logger = logger;
         }
+        /// <summary>
+        /// Überschreiben der GetArtikelInfo-Methode. 
+        /// </summary>
+        /// <param name="request"></param> Der Request, welcher vom Client abgesetzt wurde.
+        /// <param name="context"></param> Der Context des ServerCalls
+        /// <returns></returns>
         public override Task<ArtikelModell> GetArtikelInfo(
             ArtikelSuchenMitIdModell request, ServerCallContext context)
         {
@@ -41,16 +47,20 @@ namespace GrpcServer.Services
                 output.Anzahl = 42;
                 output.MinBestand = 12;
             }
-           // else
-            //{
-             //   throw StatusCode.NotFound;
-           // }
-
+          
+            
             return Task.FromResult(output);
         }
 
-        // Überschreiben der GetAlleArtikel Methode
-        // Das IEnumerable-Objekt wird iteriert und der jeweilige Artikel wird asynchron gestreamed
+        // 
+        // 
+        /// <summary>
+        /// Überschreiben der GetAlleArtikel Methode. Das IEnumerable-Objekt wird iteriert und der jeweilige Artikel wird asynchron gestreamed 
+        /// </summary>
+        /// <param name="request"></param> Der einkommende Request des Clients
+        /// <param name="responseStream"></param> Der ausgehende Response vom Server
+        /// <param name="context"></param> Der Context des ServerCalls
+        /// <returns></returns>
         public override async Task GetAlleArtikel(AlleArtikelAnfrage request, IServerStreamWriter<ArtikelModell> responseStream, ServerCallContext context)
         {
             foreach (var current in GetArtikels())
@@ -58,8 +68,15 @@ namespace GrpcServer.Services
                 await responseStream.WriteAsync(current);
             }
         }
-        // Überschreiben der GetAlleArtikelKollektion Methode - Gibt alle Artikel einer bestimmmten Kollektion zurück
         // 
+        //
+        /// <summary>
+        /// Überschreiben der GetAlleArtikelKollektion Methode - Gibt alle Artikel einer bestimmmten Kollektion zurück 
+        /// </summary>
+        /// <param name="requestStream"></param> Der RequestStream --> die Daten, die der Client an den Server schickt
+        /// <param name="responseStream"></param> Der ResponseStream --> die Daten, welcher der Server zurück an den Client sendet
+        /// <param name="context"></param> Der Context des ServerCalls
+        /// <returns></returns>
         public override async Task GetAlleArtikelKollektion(IAsyncStreamReader<Kollektion> requestStream, IServerStreamWriter<ArtikelModell> responseStream, ServerCallContext context)
         {
             int counter = 0;
@@ -77,8 +94,16 @@ namespace GrpcServer.Services
             }
         }
 
-        public IEnumerable<ArtikelModell> GetArtikels(string kol=null)
+
+        /// <summary>
+        /// Methode, welche ein IEnumerable zurückgibt vom Typ ArtikelModell
+        /// </summary>
+        /// <param name="kollektionsString"></param> kann gesetzt werden, wenn nur nach bestimmten Kollektionen gesucht werden soll. Falls alle Artikel angezeigt werden sollen wird dieser Parameter freigelassen.
+        /// <returns></returns>
+        public IEnumerable<ArtikelModell> GetArtikels(string kollektionsString=null)
         {
+
+            /// Anstelle eines Aufrufs einer Datenbank simulieren wir dies durch diese Liste.
             List<ArtikelModell> dummyListe = new List<ArtikelModell>();
             dummyListe.Add(new ArtikelModell { Anzahl = 10, Id = "1", IstAusverkauft=false, MinBestand=5, Name="Stuhl", Kollektion="a"});
             dummyListe.Add(new ArtikelModell { Anzahl = 25, Id = "2", IstAusverkauft=false, MinBestand=3, Name="Tisch", Kollektion="a"});
@@ -87,16 +112,19 @@ namespace GrpcServer.Services
             dummyListe.Add(new ArtikelModell { Anzahl = 0, Id = "5", IstAusverkauft=true, MinBestand=12, Name="Schreibtisch", Kollektion="b"});
             dummyListe.Add(new ArtikelModell { Anzahl = 0, Id = "6", IstAusverkauft=true, MinBestand=20, Name="Nachttisch", Kollektion="b"});
 
-            if (kol != null)
+
+            // Wenn der kollektionString gesetzt wurde, dann iterieren wir über jeden Artikel aber geben nur diejenigen zurück, die unserer gewünschten Kollektion entsprechen.
+            if (kollektionsString != null)
             {
                 foreach (var artikel in dummyListe)
                 {
-                    if(artikel.Kollektion == kol)
+                    if(artikel.Kollektion == kollektionsString)
                     {
                         yield return artikel;
                     }
                 }
             }
+            // Falls der kollektionsString nicht gesetzt wurde iterieren wir über die Liste und geben jeden Artikel zurück.
             else
             {
                 foreach (var artikel in dummyListe)

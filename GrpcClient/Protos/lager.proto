@@ -3,32 +3,37 @@ syntax = "proto3";
 option csharp_namespace = "GrpcServer";
 
 
-
+// Methoden zum Service Lager.
 service Lager {
+	// "Methode" die eine ID als Request annimmt und gegebenenfalls den gefundenen Artikel zurückgibt.
 	rpc GetArtikelInfo (ArtikelSuchenMitIdModell) returns (ArtikelModell);
+	// "Methode" die eine AlleArtikelAnfrage annimmt und alle Artikel als Stream zurückgibt.
 	rpc GetAlleArtikel (AlleArtikelAnfrage) returns (stream ArtikelModell);
+	// "Methode" die einen Stream von Kollektion entgegennimmt und gegebenenfalls einen Stream von Artikeln zurückgibt.
 	rpc GetAlleArtikelKollektion (stream Kollektion) returns (stream ArtikelModell);
 }
 
+// "Datentyp", welcher einen GetAlleArtikelRequest repräsentieren soll.
 message AlleArtikelAnfrage{
 
 }
-
+// "Datentyp" Kollektion, welcher einen GetAlleArtikelKollektionRequest repräsentieren soll.
 message Kollektion{
 	string kol = 1; 
 }
 
-
+// "Datentyp" ArtikelSuchenMitIdModell, welcher einen GetArtikelInfoRequest repräsentieren soll.
 message ArtikelSuchenMitIdModell {
 	string id = 1;
 }
 
+// "Datentyp" ArtikelModell definieren, welcher einen Artikel repräsentieren soll.
 message ArtikelModell {
 	string id = 1;
 	string name = 2;
 	int32 anzahl = 3;
 	int32 minBestand = 4;
 	bool istAusverkauft = 5;
-	string kollektion =6;
+	string kollektion = 6;
 }
 

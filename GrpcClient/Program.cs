@@ -11,16 +11,6 @@ namespace GrpcClient
     {
         static async Task Main(string[] args)
         {
-            //var input = new HelloRequest { Name = "Tim" };
-            //var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            /*var client = new Greeter.GreeterClient(channel);
-
-            var reply = await client.SayHelloAsync(input);
-
-            Console.WriteLine(reply.Message);
-            */
-
-
             // langlebige HTTP2 Verbindung aufbauen
             var channel = GrpcChannel.ForAddress("https://localhost:5001");
 
@@ -45,16 +35,7 @@ namespace GrpcClient
                 Console.WriteLine($" ID : {art.Id} \n Name : {art.Name} \n Anzahl : {art.Anzahl} \n Ausverkauft : {art.IstAusverkauft}");
             }
 
-            Kollektion kollektionA = new Kollektion { Kol = "a" };
-            //var AlleArtikelKollektion = lagerClient.GetAlleArtikelKollektion(kollektionA.Kol);
-            //denk daran es zu löschen, wenn die andere Implementierung klappt!!!
-
-
-            List<Kollektion> requests = new List<Kollektion>();
-            requests.Add(new Kollektion { Kol = "b" });
-            requests.Add(new Kollektion { Kol = "a" });
-
-
+            // Der Responsestream beim Bidirektionalen Streaming wird hier durchiteriert und nacheinander ausgegeben.
             using (var call = lagerClient.GetAlleArtikelKollektion())
             {
                 var responseReaderTask = Task.Run(async () =>
@@ -66,6 +47,7 @@ namespace GrpcClient
                     }
                 });
 
+                // Simulation eines Requeststreams in Form von Eingabeaufforderungen
                 for( int i=0; i<2; ++i)
                 {
                     Console.WriteLine("Bitte geben sie ihre gewünschte Kollektion ein!");
