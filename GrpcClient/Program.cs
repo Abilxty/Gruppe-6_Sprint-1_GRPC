@@ -32,7 +32,33 @@ namespace GrpcClient
             {
                 Console.WriteLine($" ID : {artikel.Id} \n Name : {artikel.Name} \n Anzahl : {artikel.Anzahl} \n Ausverkauft : {artikel.IstAusverkauft}");
             }
-            
+
+            Console.WriteLine("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+            // Der Methode TriggerBestellung wird eine valide Anfrage übergeben, welche erfolgreich durchlaufen sollte. 
+            var bestellungResponse = await lagerClient.TriggerBestellungAsync(new Bestellung1Artikel { Anzahl = 1, Id = "1" });
+            if (bestellungResponse.StatusCode == "501")
+            {
+                Console.WriteLine("Der Artikel ist leider ausverkauft!");
+            }
+            else
+            {
+                Console.WriteLine($"Vielen Dank für deine Bestellung der Gesamtpreis beträgt {bestellungResponse.Preis} Euro");
+            }
+
+            Console.WriteLine("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+            // Der Methode TriggerBestellung wird eine invalide Anfrage übergeben, welche zu einem Fehler führt. 
+            var bestellungResponse2 = await lagerClient.TriggerBestellungAsync(new Bestellung1Artikel { Anzahl = 1, Id = "4" });
+            if (bestellungResponse2.StatusCode == "501")
+            {
+                Console.WriteLine("Der Bestand für diesen Artikel ist leider nicht hoch genug!");
+            }
+            if (bestellungResponse2.StatusCode == "201")
+            {
+                Console.WriteLine($"Vielen Dank für deine Bestellung der Gesamtpreis beträgt {bestellungResponse.Preis} Euro");
+            }
+
+            Console.WriteLine("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
             // Es wird eine Anfrage nach allen Artikeln übermittelt 
             using var alleArtikel = lagerClient.GetAlleArtikel(new AlleArtikelAnfrage());
@@ -42,6 +68,7 @@ namespace GrpcClient
             {
                 Console.WriteLine($" ID : {art.Id} \n Name : {art.Name} \n Anzahl : {art.Anzahl} \n Ausverkauft : {art.IstAusverkauft}");
             }
+            Console.WriteLine("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
             // Der Responsestream beim Bidirektionalen Streaming wird hier durchiteriert und nacheinander ausgegeben.
             using (var call = lagerClient.GetAlleArtikelKollektion())
@@ -56,9 +83,9 @@ namespace GrpcClient
                 });
 
                 // Simulation eines Requeststreams in Form von Eingabeaufforderungen
-                for( int i=0; i<2; ++i)
+                Console.WriteLine("Bitte geben sie ihre gewünschte Kollektion ein! Sie können auch mehrere nacheinander eingeben.");
+                for ( int i=0; i<2; ++i)
                 {
-                    Console.WriteLine("Bitte geben sie ihre gewünschte Kollektion ein!");
                     String kolString = Console.ReadLine();
                     await call.RequestStream.WriteAsync(new Kollektion { Kol = kolString});
                 }
@@ -66,8 +93,7 @@ namespace GrpcClient
                 await responseReaderTask;
             }
 
-
-
+           
             Console.ReadLine();
         }
     }

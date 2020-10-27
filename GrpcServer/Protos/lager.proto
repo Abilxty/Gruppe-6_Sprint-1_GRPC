@@ -41,11 +41,13 @@ message ArtikelModell {
 	int32 preis = 8;
 }
 
+// "Datentyp" Bestellung1Artikel definieren, welcher einen bestellten Artikel repräsentieren soll.
 message Bestellung1Artikel{
 	string id = 1;
 	int32 anzahl = 2;
 }
 
+// "Datentyp" TriggerBestellungResult definieren, welcher die TriggerBestellung repräsentieren soll.
 message TriggerBestellungResult{
 	string statusCode = 1;
 	int32 preis = 2;

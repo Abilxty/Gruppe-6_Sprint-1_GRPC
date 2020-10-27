@@ -19,12 +19,12 @@ namespace GrpcServer.Services
         /// Anstelle eines Aufrufs einer Datenbank simulieren wir dies durch diese Liste.
         List<ArtikelModell> dummyListe = new List<ArtikelModell>()
         {
-            new ArtikelModell { Anzahl = 10, Id = "1", IstAusverkauft=false, MinBestand=5, Name="Stuhl", Kollektion="a"},          
-            new ArtikelModell { Anzahl = 0, Id = "5", IstAusverkauft = true, MinBestand = 12, Name = "Schreibtisch", Kollektion = "b" },
-            new ArtikelModell { Anzahl = 25, Id = "2", IstAusverkauft=false, MinBestand=3, Name="Tisch", Kollektion="a"},
-            new ArtikelModell { Anzahl = 0, Id = "6", IstAusverkauft = true, MinBestand = 20, Name = "Nachttisch", Kollektion = "b" },
-            new ArtikelModell { Anzahl = 42, Id = "3", IstAusverkauft = false, MinBestand = 12, Name = "Schrank", Kollektion = "a" },
-            new ArtikelModell { Anzahl = 0, Id = "4", IstAusverkauft = true, MinBestand = 7, Name = "Lampe", Kollektion = "b" },
+            new ArtikelModell { Anzahl = 10, Id = "1", IstAusverkauft=false, MinBestand=5, Name="Stuhl", Kollektion="a", Preis=5},          
+            new ArtikelModell { Anzahl = 0, Id = "5", IstAusverkauft = true, MinBestand = 12, Name = "Schreibtisch", Kollektion = "b", Preis=6 },
+            new ArtikelModell { Anzahl = 25, Id = "2", IstAusverkauft=false, MinBestand=3, Name="Tisch", Kollektion="a", Preis =8},
+            new ArtikelModell { Anzahl = 0, Id = "6", IstAusverkauft = true, MinBestand = 20, Name = "Nachttisch", Kollektion = "b", Preis=10 },
+            new ArtikelModell { Anzahl = 42, Id = "3", IstAusverkauft = false, MinBestand = 12, Name = "Schrank", Kollektion = "a", Preis=42 },
+            new ArtikelModell { Anzahl = 0, Id = "4", IstAusverkauft = true, MinBestand = 7, Name = "Lampe", Kollektion = "b", Preis=2 },
     };
        
 
@@ -34,7 +34,7 @@ namespace GrpcServer.Services
 /// <param name="request"></param> Der Request, welcher vom Client abgesetzt wurde.
 /// <param name="context"></param> Der Context des ServerCalls
 /// <returns></returns>
-public override Task<ArtikelModell> GetArtikelInfo(
+public override async Task<ArtikelModell> GetArtikelInfo(
             ArtikelSuchenMitIdModell request, ServerCallContext context)
         {
             ArtikelModell output = new ArtikelModell();
@@ -75,39 +75,56 @@ public override Task<ArtikelModell> GetArtikelInfo(
                 output.StatusCode = "404";
             }
 
-            return Task.FromResult(output);
+            return await Task.FromResult(output);
         }
-
-        public override Task<TriggerBestellungResult> TriggerBestellung(Bestellung1Artikel request, ServerCallContext context)
+        /// <summary>
+        /// Eine Methode, welche einen Bestellung1ArtikelRequest übergeben bekommt und daraufhin eine Bestellbestätigung(vom Datentyp TriggerBestellungResult) zurückgibt.
+        /// </summary>
+        /// <param name="request"></param> Der übergebene Request.
+        /// <param name="context"></param> Der Context des ServerCalls
+        /// <returns></returns>
+        public override async Task<TriggerBestellungResult> TriggerBestellung(Bestellung1Artikel request, ServerCallContext context)
         {
 
             TriggerBestellungResult output = new TriggerBestellungResult();
-            var gewünschterArtikel = GetArtikelInfo(new ArtikelSuchenMitIdModell { Id = request.Id }, context).Result;
+            // "Auslesen" aus der Datenbank
+            var gewünschterArtikel = (await GetArtikelInfo(new ArtikelSuchenMitIdModell { Id = request.Id }, context));
             int verfügbareAnzahl = gewünschterArtikel.Anzahl;
 
-            if (verfügbareAnzahl < request.Anzahl)
+            try
+            {   // Checken, ob der Bestand größer ist als die angefragte Menge. Falls dies nicht der Fall ist, wird eine Exception geworfen.
+                if (verfügbareAnzahl < request.Anzahl)
+                {
+                    output.StatusCode = "501";
+                    return output;
+                    throw new RpcException(new Status(StatusCode.FailedPrecondition, "Der Bestand ist zu niedrig!"));
+                }
+            }
+            catch(RpcException e)
             {
-                output.StatusCode = "501";
-                throw new RpcException(new Status(StatusCode.FailedPrecondition, "Der Bestand ist zu niedrig!"));
+                Console.WriteLine($"Ein Fehler ist aufgetreten: {e.Message} \nStatusCode: {e.StatusCode}");
+                
             }
 
-            int gesamtPreis = 0;
-
-            foreach(var art in dummyListe)
+            int gesamtPreis;
+            int artPreis=100;
+            // "Datenbank-Query" welche uns den gesuchten Preis zurückgibt, damit wir den Gesamtpreis berechnen können.
+            foreach(ArtikelModell art in dummyListe)
             {
                 if(gewünschterArtikel.Id == art.Id)
                 {
-                    art.Anzahl--;
-                    gesamtPreis = art.Preis*request.Anzahl;
+                    artPreis = art.Preis;
+                    art.Anzahl=art.Anzahl-1;
+                    gesamtPreis = art.Preis * request.Anzahl;
                     if (art.Anzahl < art.MinBestand)
                     {
                         Console.WriteLine("Der aktuelle Bestand ist kleiner als der Mindestbestand! Es sollte unbedingt nachbestellt werden!");
                     }
                 }
             }
-            output.Preis = gesamtPreis;
+            output.Preis = artPreis;
             output.StatusCode = "201";
-            return Task.FromResult(output);
+            return output;
         }
 
         /// <summary>
