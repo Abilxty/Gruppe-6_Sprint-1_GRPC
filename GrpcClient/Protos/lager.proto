@@ -11,6 +11,8 @@ service Lager {
 	rpc GetAlleArtikel (AlleArtikelAnfrage) returns (stream ArtikelModell);
 	// "Methode" die einen Stream von Kollektion entgegennimmt und gegebenenfalls einen Stream von Artikeln zurückgibt.
 	rpc GetAlleArtikelKollektion (stream Kollektion) returns (stream ArtikelModell);
+	//
+	rpc TriggerBestellung (Bestellung1Artikel) returns (TriggerBestellungResult);
 }
 
 // "Datentyp", welcher einen GetAlleArtikelRequest repräsentieren soll.
@@ -36,4 +38,15 @@ message ArtikelModell {
 	bool istAusverkauft = 5;
 	string kollektion = 6;
 	string statusCode = 7;
+	int32 preis = 8;
+}
+
+message Bestellung1Artikel{
+	string id = 1;
+	int32 anzahl = 2;
+}
+
+message TriggerBestellungResult{
+	string statusCode = 1;
+	int32 preis = 2;
 }
