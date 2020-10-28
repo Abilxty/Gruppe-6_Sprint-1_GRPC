@@ -28,55 +28,55 @@ namespace GrpcServer.Services
     };
        
 
-/// <summary>
-/// Überschreiben der GetArtikelInfo-Methode. 
-/// </summary>
-/// <param name="request"></param> Der Request, welcher vom Client abgesetzt wurde.
-/// <param name="context"></param> Der Context des ServerCalls
-/// <returns></returns>
-public override async Task<ArtikelModell> GetArtikelInfo(
-            ArtikelSuchenMitIdModell request, ServerCallContext context)
-        {
-            ArtikelModell output = new ArtikelModell();
+        /// <summary>
+        /// Überschreiben der GetArtikelInfo-Methode. 
+        /// </summary>
+        /// <param name="request"></param> Der Request, welcher vom Client abgesetzt wurde.
+        /// <param name="context"></param> Der Context des ServerCalls
+        /// <returns></returns>
+        public override async Task<ArtikelModell> GetArtikelInfo(
+                    ArtikelSuchenMitIdModell request, ServerCallContext context)
+                {
+                    ArtikelModell output = new ArtikelModell();
 
 
-            try
-            {
-                if (request.Id == "1")
-                {
-                    output.Id = "1";
-                    output.Name = "Stuhl";
-                    output.Anzahl = 10;
-                    output.MinBestand = 5;
-                }
-                else if (request.Id == "2")
-                {
-                    output.Id = "2";
-                    output.Name = "Tisch";
-                    output.Anzahl = 25;
-                    output.MinBestand = 3;
+                    try
+                    {
+                        if (request.Id == "1")
+                        {
+                            output.Id = "1";
+                            output.Name = "Stuhl";
+                            output.Anzahl = 10;
+                            output.MinBestand = 5;
+                        }
+                        else if (request.Id == "2")
+                        {
+                            output.Id = "2";
+                            output.Name = "Tisch";
+                            output.Anzahl = 25;
+                            output.MinBestand = 3;
 
-                }
-                else if (request.Id == "3")
-                {
-                    output.Id = "3";
-                    output.Name = "Schrank";
-                    output.Anzahl = 42;
-                    output.MinBestand = 12;
-                }
-                else
-                {
-                    throw new RpcException(new Status(StatusCode.InvalidArgument, "Ouch!"));
-                }
-            }
-            catch(RpcException e)
-            {
-                Console.WriteLine($"Ein Fehler ist aufgetreten: {e.Message} \nStatusCode: {e.StatusCode}");
-                output.StatusCode = "404";
-            }
+                        }
+                        else if (request.Id == "3")
+                        {
+                            output.Id = "3";
+                            output.Name = "Schrank";
+                            output.Anzahl = 42;
+                            output.MinBestand = 12;
+                        }
+                        else
+                        {
+                            throw new RpcException(new Status(StatusCode.InvalidArgument, "Ouch!"));
+                        }
+                    }
+                    catch(RpcException e)
+                    {
+                        Console.WriteLine($"Ein Fehler ist aufgetreten: {e.Message} \nStatusCode: {e.StatusCode}");
+                        output.StatusCode = "404";
+                    }
 
-            return await Task.FromResult(output);
-        }
+                    return await Task.FromResult(output);
+                }
         /// <summary>
         /// Eine Methode, welche einen Bestellung1ArtikelRequest übergeben bekommt und daraufhin eine Bestellbestätigung(vom Datentyp TriggerBestellungResult) zurückgibt.
         /// </summary>
