@@ -11,7 +11,7 @@ service Lager {
 	rpc GetAlleArtikel (AlleArtikelAnfrage) returns (stream ArtikelModell);
 	// "Methode" die einen Stream von Kollektion entgegennimmt und gegebenenfalls einen Stream von Artikeln zurückgibt.
 	rpc GetAlleArtikelKollektion (stream Kollektion) returns (stream ArtikelModell);
-	//
+	// Methode die eine Bestellung1Artikel Request entgegennimmt und eine Bestellbestätigung zurückgibt (TriggerBestellungResult)
 	rpc TriggerBestellung (Bestellung1Artikel) returns (TriggerBestellungResult);
 }
 
