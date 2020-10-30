@@ -18,21 +18,25 @@ Wir haben uns dafür entschieden einen Lagerservice zu implementieren, welcher e
 ---------------------------------------------------------------------------------------------------------------------
 
 -Falls man die ID eines Artikels hat, kann man sich weitere Informationen zu besagtem Artikel holen.
+
 rpc GetArtikelInfo
 
 ---------------------------------------------------------------------------------------------------------------------
 
 -Falls man sich einen Überblick über das Lager verschaffen möchte kann sich alle Artikel anzeigen lassen.
+
 rpc GetAlleArtikel
 
 ---------------------------------------------------------------------------------------------------------------------
 
 -Es können alle Artikeln einer bestimmten Kollektion ausgegeben werden.
+
 rpc GetAlleArtikelKollektion
 
 ---------------------------------------------------------------------------------------------------------------------
 
 -Der Client kann, wenn er die ID des gewünschten Artikels hat, eine Bestellung tätigen.
+
 rpc TriggerBestellung
 
 ---------------------------------------------------------------------------------------------------------------------
