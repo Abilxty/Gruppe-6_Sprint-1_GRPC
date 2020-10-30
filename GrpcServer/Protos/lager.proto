@@ -5,13 +5,17 @@ option csharp_namespace = "GrpcServer";
 
 // Methoden zum Service Lager.
 service Lager {
-	// "Methode" die eine ID als Request annimmt und gegebenenfalls den gefundenen Artikel zurückgibt.
+	// "Methode" die eine ID als Request annimmt und gegebenenfalls den gefundenen Artikel zurückgibt. 
+	// Hiermit kann man sich weitere Infos zu einem Artikel anzeigen lassen, wenn man die ArtikelID besitzt.
 	rpc GetArtikelInfo (ArtikelSuchenMitIdModell) returns (ArtikelModell);
 	// "Methode" die eine AlleArtikelAnfrage annimmt und alle Artikel als Stream zurückgibt.
+	// Hiermit kann man sich alle Artikel ausgeben lassen.
 	rpc GetAlleArtikel (AlleArtikelAnfrage) returns (stream ArtikelModell);
 	// "Methode" die einen Stream von Kollektion entgegennimmt und gegebenenfalls einen Stream von Artikeln zurückgibt.
+	// Hiermit kann man sich alle Artikel einer bestimmten Kollektion ausgeben lassen.
 	rpc GetAlleArtikelKollektion (stream Kollektion) returns (stream ArtikelModell);
 	// Methode die eine Bestellung1Artikel Request entgegennimmt und eine Bestellbestätigung zurückgibt (TriggerBestellungResult)
+	// Hiermit kann man einen Artikel bestellen.
 	rpc TriggerBestellung (Bestellung1Artikel) returns (TriggerBestellungResult);
 }
 
@@ -47,7 +51,7 @@ message Bestellung1Artikel{
 	int32 anzahl = 2;
 }
 
-// "Datentyp" TriggerBestellungResult definieren, welcher die TriggerBestellung repräsentieren soll.
+// "Datentyp" TriggerBestellungResult definieren, welcher die Bestellbestätigung repräsentieren soll.
 message TriggerBestellungResult{
 	string statusCode = 1;
 	int32 preis = 2;
