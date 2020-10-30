@@ -3,8 +3,11 @@
 #WICHTIG# 
 
 Folgende Pakete sollten über den NuGet-Paketmanager installiert werden:
+
 -Google.Protobuf
+
 -Grpc.Net.Client
+
 -Grpc.Tools
 
 #WICHTIG
