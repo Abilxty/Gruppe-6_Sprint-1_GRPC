@@ -29,7 +29,7 @@ namespace GrpcServer.Services
        
 
         /// <summary>
-        /// Überschreiben der GetArtikelInfo-Methode. 
+        /// Überschreiben der GetArtikelInfo-Methode. Diesse Methode kriegt einen ArtikelSuchenMitIdModell-Request und gibt gegebenenfalls den gesuchten Artikel zurück.
         /// </summary>
         /// <param name="request"></param> Der Request, welcher vom Client abgesetzt wurde.
         /// <param name="context"></param> Der Context des ServerCalls
@@ -128,7 +128,7 @@ namespace GrpcServer.Services
         }
 
         /// <summary>
-        /// Überschreiben der GetAlleArtikel Methode. Das IEnumerable-Objekt wird iteriert und der jeweilige Artikel wird asynchron gestreamed 
+        /// Überschreiben der GetAlleArtikel Methode. Das IEnumerable-Objekt, welches von der Methode GetArtikels() zurückgegeben wird, wird iteriert und der jeweilige Artikel wird asynchron gestreamed.
         /// </summary>
         /// <param name="request"></param> Der einkommende Request des Clients
         /// <param name="responseStream"></param> Der ausgehende Response vom Server
@@ -169,7 +169,7 @@ namespace GrpcServer.Services
 
 
         /// <summary>
-        /// Methode, welche ein IEnumerable zurückgibt vom Typ ArtikelModell
+        /// Methode, welche ein IEnumerable zurückgibt vom Typ ArtikelModell. Hiermit können entweder alle Artikel zurückgeben werden oder nur Artikel einer bestimmten Kollektion.
         /// </summary>
         /// <param name="kollektionsString"></param> kann gesetzt werden, wenn nur nach bestimmten Kollektionen gesucht werden soll. Falls alle Artikel angezeigt werden sollen wird dieser Parameter freigelassen.
         /// <returns></returns>
